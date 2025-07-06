@@ -35,12 +35,8 @@ df['Total'] = df[age_band_columns].sum(axis=1)
 df_plot = df[['Geography', 'Quarter', 'Total']].copy()
 
 # Convert Quarter to datetime (e.g. "2022 Q1" → 2022-01-01)
-def quarter_to_date(q):
-    year, qtr = q.split()
-    q_num = int(qtr[1])
-    return datetime(int(year), (q_num - 1) * 3 + 1, 1)
-
-df_plot['QuarterDate'] = df_plot['Quarter'].apply(quarter_to_date)
+df_plot['QuarterDate'] = pd.to_datetime(df_plot['Quarter'], format='%Y-%m', errors='coerce')
+df_plot = df_plot.dropna(subset=['QuarterDate'])
 
 # Set slider range
 min_date = df_plot['QuarterDate'].min()
