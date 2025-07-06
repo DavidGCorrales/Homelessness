@@ -39,8 +39,8 @@ df_plot['QuarterDate'] = pd.to_datetime(df_plot['Quarter'], format='%Y-%m', erro
 df_plot = df_plot.dropna(subset=['QuarterDate'])
 
 # Set slider range
-min_date = df_plot['QuarterDate'].min()
-max_date = df_plot['QuarterDate'].max()
+min_date = df_plot['QuarterDate'].min().to_pydatetime()
+max_date = df_plot['QuarterDate'].max().to_pydatetime()
 
 # Date slider
 date_range = st.slider(
