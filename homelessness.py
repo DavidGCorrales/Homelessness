@@ -34,20 +34,19 @@ df['Total'] = df[age_band_columns].sum(axis=1)
 # Extract subset
 df_plot = df[['Geography', 'Quarter', 'Total']].copy()
 
-# Convert Quarter to datetime (e.g. "2022 Q1" → 2022-01-01)
+# Convert Quarter to datetime and clean data
 df_plot['QuarterDate'] = pd.to_datetime(df_plot['Quarter'], format='%Y-%m', errors='coerce')
 df_plot = df_plot.dropna(subset=['QuarterDate'])
 
-# Set slider range
-min_date = df_plot['QuarterDate'].min().to_pydatetime()
-max_date = df_plot['QuarterDate'].max().to_pydatetime()
+# Create sorted list of unique quarterly dates
+quarter_dates = sorted(df_plot['QuarterDate'].unique())
 
-# Date slider
-date_range = st.slider(
+# Use select_slider instead of slider for quarterly granularity
+date_range = st.select_slider(
     "Select Quarter Range",
-    min_value=min_date,
-    max_value=max_date,
-    value=(min_date, max_date)
+    options=quarter_dates,
+    value=(quarter_dates[0], quarter_dates[-1]),
+    format_func=lambda x: x.strftime('%Y-%m')
 )
 
 # Filter by date range
