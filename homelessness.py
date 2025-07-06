@@ -43,8 +43,12 @@ min_date = df_plot['QuarterDate'].min()
 max_date = df_plot['QuarterDate'].max()
 
 # Date slider
-date_range = st.slider("Select Quarter Range", min_value=min_date, max_value=max_date,
-                       value=(min_date, max_date), format="YYYY-MM")
+date_range = st.slider(
+    "Select Quarter Range",
+    min_value=min_date,
+    max_value=max_date,
+    value=(min_date, max_date)
+)
 
 # Filter by date range
 df_plot = df_plot[(df_plot['QuarterDate'] >= date_range[0]) & (df_plot['QuarterDate'] <= date_range[1])]
