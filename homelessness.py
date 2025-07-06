@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Title
-st.title("Volume of main applicants assessed as owed a prevention or relief duty by Geography Over Time")
+st.title("Volume of homelessness* by Geography Over Time")
 
 # Load data
 @st.cache_data
