@@ -86,18 +86,3 @@ st.download_button(
     file_name="filtered_national_volumes.csv",
     mime="text/csv"
 )
-
-import os
-
-# Path to the CSV file and your repo root directory
-csv_path = r"C:\Users\david\.streamlit\all_national_vols.csv"
-repo_dir = r"C:\Users\david\.streamlit\.git"
-
-# Move to repo directory
-os.chdir(repo_dir)
-
-# Git commands to add, commit, and push updated CSV
-os.system(f"git add {csv_path}")
-os.system('git commit -m "Update all_national_vols.csv with latest data"')
-os.system("git push origin main")  # Change 'main' if your default branch is different
-
