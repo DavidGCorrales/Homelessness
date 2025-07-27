@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Title
-st.title("Volume of Homelessness* by Geography Over Time")
+st.title("Homelessness in London vs Rest of England")
 
 # Load data
 @st.cache_data
