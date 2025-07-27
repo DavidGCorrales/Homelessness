@@ -71,17 +71,21 @@ df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
 # Sort
 df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 
-# Plot
-st.markdown("#### London vs Rest of England")
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
-ax.set_xlabel("Quarter")
-ax.set_ylabel("Volume")
-ax.set_title("Volume of Main Applicants Assessed as Owed a Prevention or Relief Duty")
-ax.set_xticks(df_plot['QuarterDate'].unique())
-ax.set_xticklabels(df_plot['Quarter'].unique(), rotation=45)
-ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
-st.pyplot(fig)
+# # Plot
+# st.markdown("#### London vs Rest of England")
+# fig, ax = plt.subplots(figsize=(12, 6))
+# sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
+# ax.set_xlabel("Quarter")
+# ax.set_ylabel("Volume")
+# ax.set_title("Volume of Main Applicants Assessed as Owed a Prevention or Relief Duty")
+# ax.set_xticks(df_plot['QuarterDate'].unique())
+# ax.set_xticklabels(df_plot['Quarter'].unique(), rotation=45)
+# ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
+# st.pyplot(fig)
+
+df_volume_chart = df_plot.pivot(index='QuarterDate', columns='Geography', values='Total')
+st.subheader("London vs Rest of England")
+st.line_chart(df_volume_chart)
 
 # Summary table
 st.markdown("#### Average Monthly Volume")
@@ -110,7 +114,7 @@ df['Indexed Change (%)'] = df.apply(
 df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
 
 # Plot
-st.subheader("Percentage Change in Homelessness for Selected Date Range")
+st.subheader("Percentage Change in Homelessness vs Selected Start Date")
 
 # Optional: geography selector
 geos = df_indexed['Geography'].unique()
@@ -150,20 +154,23 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
     axis=1
 )
 
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(data=df_filtered, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
-ax.axhline(0, color='gray', linestyle='--')
-ax.set_xlabel("Quarter")
-ax.set_ylabel("Indexed Change (%)")
-ax.set_title("Percentage Change in Volume of Homeless Applicants vs March 2021")
-plt.xticks(rotation=45)
-ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
-st.pyplot(fig)
+# fig, ax = plt.subplots(figsize=(12, 6))
+# sns.lineplot(data=df_filtered, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
+# ax.axhline(0, color='gray', linestyle='--')
+# ax.set_xlabel("Quarter")
+# ax.set_ylabel("Indexed Change (%)")
+# ax.set_title("Percentage Change in Volume of Homeless Applicants vs March 2021")
+# plt.xticks(rotation=45)
+# ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
+# st.pyplot(fig)
+
+# Ensure QuarterDate is used for consistent x-axis
+df_indexed_chart = df_filtered.pivot(index='QuarterDate', columns='Geography', values='Indexed Change (%)')
+st.line_chart(df_indexed_chart)
 
 # Optional: data preview
 with st.expander("Show Data Table"):
     st.dataframe(df_indexed, use_container_width=True)
-
 
 # # Download button
 # csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
