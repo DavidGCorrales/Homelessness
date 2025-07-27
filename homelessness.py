@@ -12,7 +12,7 @@ st.set_page_config(
 
 # Title
 st.markdown(
-    "<h1 style='text-align: center;'>Homelessness in London vs Rest of England</h1>",
+    "<h1 style='text-align: center;'>Homelessness* in London vs Rest of England</h1>",
     unsafe_allow_html=True
 )
 
