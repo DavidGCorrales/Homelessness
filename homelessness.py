@@ -74,7 +74,7 @@ ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 st.pyplot(fig)
 
 # Summary table
-st.subheader("Average Volume by Geography (Filtered Range)")
+st.subheader("Average Monthly Volume by Geography (Filtered Range)")
 summary_table = df_plot.groupby('Geography')['Total'].mean().reset_index()
 summary_table.columns = ['Geography', 'Average Volume']
 st.dataframe(summary_table, use_container_width=True)
