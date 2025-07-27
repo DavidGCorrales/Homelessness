@@ -72,7 +72,7 @@ df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
 df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 
 # Plot
-st.subheader("Homelessness in London vs Rest of England")
+st.subheader("London vs Rest of England")
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
 ax.set_xlabel("Quarter")
@@ -90,8 +90,44 @@ summary_table.columns = ['Geography', 'Average Volume']
 summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
 st.dataframe(summary_table, use_container_width=True)
 
+st.markdown("<br><br>", unsafe_allow_html=True)
 
+# Sort
+df = df.sort_values(['Geography', 'Quarter'])
 
+# Calculate baseline from March 2021
+baseline = df[df['Quarter'] == '2021-03'].set_index('Geography')['Total']
+
+# Calculate indexed % change
+df['Indexed Change (%)'] = df.apply(
+    lambda row: (row['Total'] / baseline[row['Geography']] - 1) * 100 if row['Geography'] in baseline else None,
+    axis=1
+)
+
+# Filtered data
+df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
+
+# # Optional: geography selector
+# geos = df_indexed['Geography'].unique()
+# selected_geos = st.multiselect("Select Geographies to Compare", options=geos, default=list(geos))
+# df_indexed = df_indexed[df_indexed['Geography'].isin(selected_geos)]
+
+# Plot
+st.subheader("Percentage Change in Homelessness compared to March 2021")
+
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.lineplot(data=df_indexed, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
+ax.axhline(0, color='gray', linestyle='--')
+ax.set_xlabel("Quarter")
+ax.set_ylabel("Indexed Change (%)")
+ax.set_title("Percentage Change in Volume of Homeless Applicants vs March 2021")
+plt.xticks(rotation=45)
+ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
+st.pyplot(fig)
+
+# Optional: data preview
+with st.expander("Show Indexed Data Table"):
+    st.dataframe(df_indexed, use_container_width=True)
 
 
 # # Download button
