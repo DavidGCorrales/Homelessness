@@ -11,7 +11,10 @@ st.set_page_config(
 )
 
 # Title
-st.title("Homelessness in London vs Rest of England")
+st.markdown(
+    "<h1 style='text-align: center;'>Volume of Homelessness in London vs Rest of England</h1>",
+    unsafe_allow_html=True
+)
 
 # Load data
 @st.cache_data
