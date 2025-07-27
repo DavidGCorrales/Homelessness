@@ -54,7 +54,7 @@ quarter_dates = sorted(df_plot['QuarterDate'].unique())
 
 # Use select_slider instead of slider for quarterly granularity
 date_range = st.select_slider(
-    "Select Quarter Range",
+    "Select Date Range",
     options=quarter_dates,
     value=(quarter_dates[0], quarter_dates[-1]),
     format_func=lambda x: x.strftime('%Y-%m')
@@ -72,7 +72,7 @@ df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
 df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 
 # Plot
-st.subheader("London vs Rest of England")
+st.markdown("#### London vs Rest of England")
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
 ax.set_xlabel("Quarter")
@@ -84,12 +84,13 @@ ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 st.pyplot(fig)
 
 # Summary table
-st.subheader("Average Monthly Volume")
+st.markdown("#### Average Monthly Volume")
 summary_table = df_plot.groupby('Geography')['Total'].mean().reset_index()
 summary_table.columns = ['Geography', 'Average Volume']
 summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
 st.dataframe(summary_table, use_container_width=True)
 
+# Add space between sections
 st.markdown("<br><br>", unsafe_allow_html=True)
 
 # Sort
@@ -107,16 +108,49 @@ df['Indexed Change (%)'] = df.apply(
 # Filtered data
 df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
 
-# # Optional: geography selector
-# geos = df_indexed['Geography'].unique()
-# selected_geos = st.multiselect("Select Geographies to Compare", options=geos, default=list(geos))
-# df_indexed = df_indexed[df_indexed['Geography'].isin(selected_geos)]
-
 # Plot
 st.subheader("Percentage Change in Homelessness compared to March 2021")
 
+# Optional: geography selector
+geos = df_indexed['Geography'].unique()
+selected_geos = st.multiselect("Select Geographies to Compare", options=geos, default=list(geos))
+df_indexed = df_indexed[df_indexed['Geography'].isin(selected_geos)]
+
+# Convert Quarter to datetime and clean data
+df_indexed['QuarterDate'] = pd.to_datetime(df_indexed['Quarter'], format='%Y-%m', errors='coerce')
+df_indexed = df_indexed.dropna(subset=['QuarterDate'])
+
+# Create sorted list of unique quarterly dates
+quarter_dates = sorted(df_indexed['QuarterDate'].unique())
+
+# Use select_slider instead of slider for quarterly granularity
+date_range = st.select_slider(
+    "Select Date Range ",
+    options=quarter_dates,
+    value=(quarter_dates[0], quarter_dates[-1]),
+    format_func=lambda x: x.strftime('%Y-%m')
+)
+
+# Filter by date range
+df_filtered = df_indexed[(df_indexed['QuarterDate'] >= date_range[0]) & (df_indexed['QuarterDate'] <= date_range[1])]
+df_filtered = df_filtered[df_filtered['Geography'].isin(selected_geos)]
+
+# Step 1: Get the baseline (earliest date in slider)
+baseline_date = df_filtered['QuarterDate'].min()
+
+# Step 2: Build baseline by geography
+baseline_df = df_filtered[df_filtered['QuarterDate'] == baseline_date][['Geography', 'Total']]
+baseline_df = baseline_df.set_index('Geography')['Total']
+
+# Step 3: Calculate % change relative to baseline
+df_filtered['Indexed Change (%)'] = df_filtered.apply(
+    lambda row: (row['Total'] / baseline_df[row['Geography']] - 1) * 100
+    if row['Geography'] in baseline_df else None,
+    axis=1
+)
+
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(data=df_indexed, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
+sns.lineplot(data=df_filtered, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
 ax.axhline(0, color='gray', linestyle='--')
 ax.set_xlabel("Quarter")
 ax.set_ylabel("Indexed Change (%)")
