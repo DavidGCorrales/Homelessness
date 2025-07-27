@@ -15,7 +15,7 @@ st.set_page_config(
 #     "<h1 style='text-align: center;'>Homelessness in London vs Rest of England</h1>",
 #     unsafe_allow_html=True
 # )
-st.title("Homelessness in England since March 2023")
+st.title("Homelessness in England since March 2021")
 st.markdown("##### \"Homelessness\" refers to households initially assessed as threatened with homelessness (owed prevention duty) or homeless (owed relief duty)")
 
 # Load data
