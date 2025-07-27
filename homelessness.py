@@ -11,10 +11,12 @@ st.set_page_config(
 )
 
 # Title
-st.markdown(
-    "<h1 style='text-align: center;'>Homelessness in London vs Rest of England</h1>",
-    unsafe_allow_html=True
-)
+# st.markdown(
+#     "<h1 style='text-align: center;'>Homelessness in London vs Rest of England</h1>",
+#     unsafe_allow_html=True
+# )
+st.title("Homelessness in England since March 2023")
+st.markdown("##### \"Homelessness\" refers to households initially assessed as threatened with homelessness (owed prevention duty) or homeless (owed relief duty)")
 
 # Load data
 @st.cache_data
@@ -70,7 +72,7 @@ df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
 df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 
 # Plot
-st.subheader("Line Chart of Total Applicants by Quarter")
+st.subheader("Homelessness in London vs Rest of England")
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
 ax.set_xlabel("Quarter")
@@ -82,17 +84,21 @@ ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 st.pyplot(fig)
 
 # Summary table
-st.subheader("Average Monthly Volume by Geography")
+st.subheader("Average Monthly Volume")
 summary_table = df_plot.groupby('Geography')['Total'].mean().reset_index()
 summary_table.columns = ['Geography', 'Average Volume']
 summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
 st.dataframe(summary_table, use_container_width=True)
 
-# Download button
-csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
-st.download_button(
-    label="📥 Download Filtered Data as CSV",
-    data=csv,
-    file_name="filtered_national_volumes.csv",
-    mime="text/csv"
-)
+
+
+
+
+# # Download button
+# csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
+# st.download_button(
+#     label="📥 Download Filtered Data as CSV",
+#     data=csv,
+#     file_name="filtered_national_volumes.csv",
+#     mime="text/csv"
+# )
