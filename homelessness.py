@@ -83,7 +83,16 @@ df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 # ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 # st.pyplot(fig)
 
-df_volume_chart = df_plot.pivot(index='QuarterDate', columns='Geography', values='Total')
+# df_volume_chart = df_plot.pivot(index='QuarterDate', columns='Geography', values='Total')
+
+df_plot['QuarterStr'] = df_plot['QuarterDate'].dt.strftime('%Y-%m')
+
+# Pivot with string-based index
+df_volume_chart = df_plot.pivot(index='QuarterStr', columns='Geography', values='Total')
+
+# Optional: Sort index
+df_volume_chart = df_volume_chart.sort_index()
+
 st.subheader("London vs Rest of England")
 st.line_chart(df_volume_chart)
 
@@ -164,8 +173,10 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
 # ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 # st.pyplot(fig)
 
+df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
+
 # Ensure QuarterDate is used for consistent x-axis
-df_indexed_chart = df_filtered.pivot(index='QuarterDate', columns='Geography', values='Indexed Change (%)')
+df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Geography', values='Indexed Change (%)')
 st.line_chart(df_indexed_chart)
 
 # Optional: data preview
