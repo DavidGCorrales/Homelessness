@@ -110,7 +110,7 @@ df['Indexed Change (%)'] = df.apply(
 df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
 
 # Plot
-st.subheader("Percentage Change in Homelessness compared to March 2021")
+st.subheader("Percentage Change in Homelessness for Selected Date Range")
 
 # Optional: geography selector
 geos = df_indexed['Geography'].unique()
@@ -161,7 +161,7 @@ ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 st.pyplot(fig)
 
 # Optional: data preview
-with st.expander("Show Indexed Data Table"):
+with st.expander("Show Data Table"):
     st.dataframe(df_indexed, use_container_width=True)
 
 
