@@ -121,7 +121,6 @@ df['Indexed Change (%)'] = df.apply(
 df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
 
 # Plot
-st.subheader("Percentage Change in Homelessness vs Selected Start Date")
 
 # Optional: geography selector
 geos = df_indexed['Geography'].unique()
@@ -175,6 +174,7 @@ df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Ensure QuarterDate is used for consistent x-axis
 df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Geography', values='Indexed Change (%)')
+st.subheader("Percentage Change in Homelessness vs Selected Start Date (Region)")
 st.line_chart(df_indexed_chart)
 
 # Optional: data preview
@@ -268,6 +268,7 @@ df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Ensure QuarterDate is used for consistent x-axis
 df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Age Band', values='Indexed Change (%)')
+st.subheader("Percentage Change in Homelessness vs Selected Start Date (Age Group)")
 st.line_chart(df_indexed_chart)
 
 # Optional: data preview
