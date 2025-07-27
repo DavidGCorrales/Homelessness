@@ -16,7 +16,8 @@ st.title("Volume of Homelessness* by Geography Over Time")
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("all_national_vols.csv")
+    url = "https://raw.githubusercontent.com/DavidGCorrales/Homelessness/master/all_national_vols.csv"
+    df = pd.read_csv(url)
     return df
 
 df = load_data()
