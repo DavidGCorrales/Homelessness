@@ -83,8 +83,6 @@ df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 # ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
 # st.pyplot(fig)
 
-# df_volume_chart = df_plot.pivot(index='QuarterDate', columns='Geography', values='Total')
-
 df_plot['QuarterStr'] = df_plot['QuarterDate'].dt.strftime('%Y-%m')
 
 # Pivot with string-based index
@@ -201,6 +199,25 @@ n_vols_sum2 = melted_df.groupby(['Quarter', 'Age Band'])['Volume'].sum().reset_i
 # Convert Quarter to datetime for plotting
 n_vols_sum2['QuarterDate'] = pd.to_datetime(n_vols_sum2['Quarter'], format='%Y-%m', errors='coerce')
 
+# Create sorted list of unique quarterly dates
+quarter_dates = sorted(n_vols_sum2['QuarterDate'].unique())
+
+# Age band selector
+age_bands = sorted(n_vols_sum2['Age Band'].unique())
+selected_ages = st.multiselect("Select Age Bands to Compare", options=age_bands, default=list(age_bands))
+n_vols_sum2 = n_vols_sum2[n_vols_sum2['Age Band'].isin(selected_ages)]
+
+# Use select_slider instead of slider for quarterly granularity
+date_range = st.select_slider(
+    "Select Date Range    ",
+    options=quarter_dates,
+    value=(quarter_dates[0], quarter_dates[-1]),
+    format_func=lambda x: x.strftime('%Y-%m')
+)
+
+# Filter by date range
+n_vols_sum2 = n_vols_sum2[(n_vols_sum2['QuarterDate'] >= date_range[0]) & (n_vols_sum2['QuarterDate'] <= date_range[1])]
+
 n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
 
 # Pivot so each Age Band is a column
@@ -208,11 +225,54 @@ pivot_df = n_vols_sum2.pivot(index='QuarterStr', columns='Age Band', values='Vol
 pivot_df = pivot_df.sort_index()  # Ensure chronological order
 
 # Streamlit plot
-st.subheader("Homeless Volume by Age Band")
+st.subheader("Homelessness by Age Band")
 st.line_chart(pivot_df)
 
+######### Add space between sections ##########
+st.markdown("<br><br>", unsafe_allow_html=True)
+###############################################
 
+selected_ages = st.multiselect("Select Age Bands to Compare ", options=age_bands, default=list(age_bands))
+n_vols_sum2 = n_vols_sum2[n_vols_sum2['Age Band'].isin(selected_ages)]
 
+# Use select_slider instead of slider for quarterly granularity
+date_range = st.select_slider(
+    "Select Date Range     ",
+    options=quarter_dates,
+    value=(quarter_dates[0], quarter_dates[-1]),
+    format_func=lambda x: x.strftime('%Y-%m')
+)
+
+# Filter by date range
+n_vols_sum2 = n_vols_sum2[(n_vols_sum2['QuarterDate'] >= date_range[0]) & (n_vols_sum2['QuarterDate'] <= date_range[1])]
+
+n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
+
+df_filtered = n_vols_sum2[n_vols_sum2['Age Band'].isin(age_bands)]
+
+# Step 1: Get the baseline (earliest date in slider)
+baseline_date = df_filtered['QuarterDate'].min()
+
+# Step 2: Build baseline by geography
+baseline_df = df_filtered[df_filtered['QuarterDate'] == baseline_date][['Age Band', 'Volume']]
+baseline_df = baseline_df.set_index('Age Band')['Volume']
+
+# Step 3: Calculate % change relative to baseline
+df_filtered['Indexed Change (%)'] = df_filtered.apply(
+    lambda row: (row['Volume'] / baseline_df[row['Age Band']] - 1) * 100
+    if row['Age Band'] in baseline_df else None,
+    axis=1
+)
+
+df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
+
+# Ensure QuarterDate is used for consistent x-axis
+df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Age Band', values='Indexed Change (%)')
+st.line_chart(df_indexed_chart)
+
+# Optional: data preview
+with st.expander("Show Data Table"):
+    st.dataframe(df_indexed, use_container_width=True)
 
 # # Download button
 # csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
