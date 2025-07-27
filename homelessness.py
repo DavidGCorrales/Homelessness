@@ -90,8 +90,9 @@ summary_table.columns = ['Geography', 'Average Volume']
 summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
 st.dataframe(summary_table, use_container_width=True)
 
-# Add space between sections
+######### Add space between sections ##########
 st.markdown("<br><br>", unsafe_allow_html=True)
+###############################################
 
 # Sort
 df = df.sort_values(['Geography', 'Quarter'])
