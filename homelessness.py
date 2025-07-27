@@ -183,6 +183,37 @@ st.line_chart(df_indexed_chart)
 with st.expander("Show Data Table"):
     st.dataframe(df_indexed, use_container_width=True)
 
+######### Add space between sections ##########
+st.markdown("<br><br>", unsafe_allow_html=True)
+###############################################
+
+melted_df = pd.melt(
+    df,
+    id_vars=['Geography', 'Quarter'],
+    value_vars=age_band_columns,
+    var_name='Age Band',
+    value_name='Volume'
+)
+
+# Group and sum by Age Band and Quarter
+n_vols_sum2 = melted_df.groupby(['Quarter', 'Age Band'])['Volume'].sum().reset_index()
+
+# Convert Quarter to datetime for plotting
+n_vols_sum2['QuarterDate'] = pd.to_datetime(n_vols_sum2['Quarter'], format='%Y-%m', errors='coerce')
+
+n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
+
+# Pivot so each Age Band is a column
+pivot_df = n_vols_sum2.pivot(index='QuarterStr', columns='Age Band', values='Volume')
+pivot_df = pivot_df.sort_index()  # Ensure chronological order
+
+# Streamlit plot
+st.subheader("Homeless Volume by Age Band")
+st.line_chart(pivot_df)
+
+
+
+
 # # Download button
 # csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
 # st.download_button(
