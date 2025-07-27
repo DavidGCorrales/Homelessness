@@ -29,11 +29,13 @@ age_band_columns = [
     '65-74 Year Olds', '75+ Year Olds', 'Age Unknown'
 ]
 
-# Age band multiselect
-selected_bands = st.multiselect("Select Age Bands", options=age_band_columns, default=age_band_columns)
+# # Age band multiselect
+# selected_bands = st.multiselect("Select Age Bands", options=age_band_columns, default=age_band_columns)
 
-# Calculate Total based on selected age bands
-df['Total'] = df[selected_bands].sum(axis=1)
+df['Total'] = df[age_band_columns].sum(axis=1)
+
+# # Calculate Total based on selected age bands
+# df['Total'] = df[selected_bands].sum(axis=1)
 
 # Extract subset
 df_plot = df[['Geography', 'Quarter', 'Total']].copy()
