@@ -85,7 +85,7 @@ df_volume_chart = df_volume_chart.sort_index()
 # st.line_chart(df_volume_chart)
 
 # Create Plotly chart
-fig = px.line(df_plot, x="QuarterDate", y="Total", color="Geography", title="Homelessness in London vs Rest of England")
+fig = px.line(df_plot, x="QuarterDate", y="Total", color="Geography")
 
 # Format x-axis ticks
 fig.update_xaxes(
@@ -96,7 +96,11 @@ fig.update_xaxes(
 )
 
 fig.update_layout(
-    title_x=0.5  # Center the title horizontally
+    title=dict(
+        text="Homelessness in London vs Rest of England",
+        x=0.5,           # Center title horizontally
+        xanchor='center' # Anchor title at center
+    )  # Center the title horizontally
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -174,8 +178,7 @@ fig = px.line(
     df_filtered,
     x='QuarterStr',
     y='Indexed Change (%)',
-    color='Geography',
-    title='Percentage Change in Homelessness: London vs Rest of England'
+    color='Geography'
 )
 
 # Format x-axis and center the title
@@ -185,7 +188,13 @@ fig.update_xaxes(
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(title_x=0.5)
+fig.update_layout(
+    title=dict(
+        text="Percentage Change in Homelessness: London vs Rest of England",
+        x=0.5,           # Center title horizontally
+        xanchor='center' # Anchor title at center
+    )
+)
 
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
@@ -241,8 +250,7 @@ fig = px.line(
     n_vols_sum2,
     x='QuarterStr',
     y='Volume',
-    color='Age Band',
-    title='Homelessness by Age Band'
+    color='Age Band'
 )
 
 # Format x-axis and center the title
@@ -252,7 +260,13 @@ fig.update_xaxes(
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(title_x=0.5)
+fig.update_layout(
+    title=dict(
+        text="Homelessness by Age Band",
+        x=0.5,           # Center title horizontally
+        xanchor='center' # Anchor title at center
+    )
+)
 
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
@@ -304,8 +318,7 @@ fig = px.line(
     df_filtered,
     x='QuarterStr',
     y='Indexed Change (%)',
-    color='Age Band',
-    title='Percentage Change in Homelessness by Age Band'
+    color='Age Band'
 )
 
 # Format x-axis and center the title
@@ -316,14 +329,11 @@ fig.update_xaxes(
     tickangle=-45
 )
 fig.update_layout(
-    title_x=0.5,
-    #     legend=dict(
-    #     orientation="h",
-    #     yanchor="bottom",
-    #     y=-0.6,
-    #     xanchor="center",
-    #     x=0.5
-    # )
+    title=dict(
+        text="Percentage Change in Homelessness by Age Band",
+        x=0.5,           # Center title horizontally
+        xanchor='center' # Anchor title at center
+    )
                   )
 
 # Display in Plotly
