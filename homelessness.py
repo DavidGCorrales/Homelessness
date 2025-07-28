@@ -16,6 +16,7 @@ st.set_page_config(
 #     "<h1 style='text-align: center;'>Homelessness in London vs Rest of England</h1>",
 #     unsafe_allow_html=True
 # )
+
 st.title("Homelessness in England since March 2021")
 st.markdown("##### \"Homelessness\" refers to households initially assessed as threatened with homelessness (owed prevention duty) or homeless (owed relief duty)")
 
@@ -72,18 +73,6 @@ df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
 # Sort
 df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
 
-# # Plot
-# st.markdown("#### London vs Rest of England")
-# fig, ax = plt.subplots(figsize=(12, 6))
-# sns.lineplot(data=df_plot, x="QuarterDate", y="Total", hue="Geography", ax=ax)
-# ax.set_xlabel("Quarter")
-# ax.set_ylabel("Volume")
-# ax.set_title("Volume of Main Applicants Assessed as Owed a Prevention or Relief Duty")
-# ax.set_xticks(df_plot['QuarterDate'].unique())
-# ax.set_xticklabels(df_plot['Quarter'].unique(), rotation=45)
-# ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
-# st.pyplot(fig)
-
 df_plot['QuarterStr'] = df_plot['QuarterDate'].dt.strftime('%Y-%m')
 
 # Pivot with string-based index
@@ -107,7 +96,7 @@ fig.update_xaxes(
 )
 
 fig.update_layout(
-    title_x=0.2  # Center the title horizontally
+    title_x=0.5  # Center the title horizontally
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -178,16 +167,6 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
     axis=1
 )
 
-# fig, ax = plt.subplots(figsize=(12, 6))
-# sns.lineplot(data=df_filtered, x="Quarter", y="Indexed Change (%)", hue="Geography", ax=ax)
-# ax.axhline(0, color='gray', linestyle='--')
-# ax.set_xlabel("Quarter")
-# ax.set_ylabel("Indexed Change (%)")
-# ax.set_title("Percentage Change in Volume of Homeless Applicants vs March 2021")
-# plt.xticks(rotation=45)
-# ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left')
-# st.pyplot(fig)
-
 df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Create Plotly chart
@@ -206,7 +185,7 @@ fig.update_xaxes(
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(title_x=0.1)
+fig.update_layout(title_x=0.5)
 
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
@@ -273,7 +252,7 @@ fig.update_xaxes(
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(title_x=0.25)
+fig.update_layout(title_x=0.5)
 
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
@@ -337,7 +316,7 @@ fig.update_xaxes(
     tickangle=-45
 )
 fig.update_layout(
-    title_x=0.2,
+    title_x=0.5,
     #     legend=dict(
     #     orientation="h",
     #     yanchor="bottom",
