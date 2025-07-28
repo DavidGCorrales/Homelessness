@@ -8,7 +8,7 @@ from datetime import datetime
 # Set Streamlit page configuration
 st.set_page_config(
     page_title="Applicant Volumes by Geography",
-    layout="wide"
+    layout="centered"
 )
 
 # Title
