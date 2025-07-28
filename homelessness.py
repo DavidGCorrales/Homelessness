@@ -96,7 +96,7 @@ fig.update_xaxes(
 )
 
 fig.update_layout(
-    title_x=0.2  # Center the title horizontally
+    title_x=0.5  # Center the title horizontally
 )
 
 st.plotly_chart(fig, use_container_width=True)
