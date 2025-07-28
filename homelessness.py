@@ -336,7 +336,16 @@ fig.update_xaxes(
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(title_x=0.25)
+fig.update_layout(
+    title_x=0.2,
+        legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=-0.6,
+        xanchor="center",
+        x=0.5
+    )
+                  )
 
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
