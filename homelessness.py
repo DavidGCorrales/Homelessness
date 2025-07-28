@@ -338,13 +338,13 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title_x=0.2,
-        legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=-0.6,
-        xanchor="center",
-        x=0.5
-    )
+    #     legend=dict(
+    #     orientation="h",
+    #     yanchor="bottom",
+    #     y=-0.6,
+    #     xanchor="center",
+    #     x=0.5
+    # )
                   )
 
 # Display in Plotly
