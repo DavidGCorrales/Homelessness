@@ -2,6 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
+import plotly.express as px
 from datetime import datetime
 
 # Set Streamlit page configuration
@@ -91,11 +92,28 @@ df_volume_chart = df_plot.pivot(index='QuarterStr', columns='Geography', values=
 # Optional: Sort index
 df_volume_chart = df_volume_chart.sort_index()
 
-st.subheader("London vs Rest of England")
-st.line_chart(df_volume_chart)
+# st.subheader("London vs Rest of England")
+# st.line_chart(df_volume_chart)
+
+# Create Plotly chart
+fig = px.line(df_plot, x="QuarterDate", y="Total", color="Geography", title="Homelessness in London vs Rest of England")
+
+# Format x-axis ticks
+fig.update_xaxes(
+    tickmode='array',
+    tickvals=df_plot['QuarterDate'].unique(),  # all unique dates
+    tickformat="%b %y",  # e.g., Mar 21
+    tickangle=-45
+)
+
+fig.update_layout(
+    title_x=0.2  # Center the title horizontally
+)
+
+st.plotly_chart(fig, use_container_width=True)
 
 # Summary table
-st.markdown("#### Average Monthly Volume")
+st.markdown("<h6 style='text-align: center;'>Average Monthly Volume</h6>", unsafe_allow_html=True)
 summary_table = df_plot.groupby('Geography')['Total'].mean().reset_index()
 summary_table.columns = ['Geography', 'Average Volume']
 summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
@@ -172,10 +190,29 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
 
 df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
-# Ensure QuarterDate is used for consistent x-axis
-df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Geography', values='Indexed Change (%)')
-st.subheader("Percentage Change in Homelessness vs Selected Start Date (Region)")
-st.line_chart(df_indexed_chart)
+# Create Plotly chart
+fig = px.line(
+    df_filtered,
+    x='QuarterStr',
+    y='Indexed Change (%)',
+    color='Geography',
+    title='Percentage Change in Homelessness: London vs Rest of England'
+)
+
+# Format x-axis and center the title
+fig.update_xaxes(
+    tickmode='array',
+    tickvals=df_filtered['QuarterStr'].unique(),  # all unique dates
+    tickformat="%b %y",  # Format as "Apr 21"
+    tickangle=-45
+)
+fig.update_layout(title_x=0.1)
+
+# Display in Plotly
+st.plotly_chart(fig, use_container_width=True)
+
+# st.subheader("Percentage Change in Homelessness vs Selected Start Date (Region)")
+# st.line_chart(df_indexed_chart)
 
 # Optional: data preview
 with st.expander("Show Data Table"):
@@ -220,13 +257,30 @@ n_vols_sum2 = n_vols_sum2[(n_vols_sum2['QuarterDate'] >= date_range[0]) & (n_vol
 
 n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
 
-# Pivot so each Age Band is a column
-pivot_df = n_vols_sum2.pivot(index='QuarterStr', columns='Age Band', values='Volume')
-pivot_df = pivot_df.sort_index()  # Ensure chronological order
+# Create Plotly chart
+fig = px.line(
+    n_vols_sum2,
+    x='QuarterStr',
+    y='Volume',
+    color='Age Band',
+    title='Homelessness by Age Band'
+)
 
-# Streamlit plot
-st.subheader("Homelessness by Age Band")
-st.line_chart(pivot_df)
+# Format x-axis and center the title
+fig.update_xaxes(
+    tickmode='array',
+    tickvals=df_filtered['QuarterStr'].unique(),  # all unique dates
+    tickformat="%b %y",  # Format as "Apr 21"
+    tickangle=-45
+)
+fig.update_layout(title_x=0.25)
+
+# Display in Plotly
+st.plotly_chart(fig, use_container_width=True)
+
+# # Streamlit plot
+# st.subheader("Homelessness by Age Band")
+# st.line_chart(pivot_df)
 
 ######### Add space between sections ##########
 st.markdown("<br><br>", unsafe_allow_html=True)
@@ -266,10 +320,30 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
 
 df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
-# Ensure QuarterDate is used for consistent x-axis
-df_indexed_chart = df_filtered.pivot(index='QuarterStr', columns='Age Band', values='Indexed Change (%)')
-st.subheader("Percentage Change in Homelessness vs Selected Start Date (Age Group)")
-st.line_chart(df_indexed_chart)
+# Create Plotly chart
+fig = px.line(
+    df_filtered,
+    x='QuarterStr',
+    y='Indexed Change (%)',
+    color='Age Band',
+    title='Percentage Change in Homelessness by Age Band'
+)
+
+# Format x-axis and center the title
+fig.update_xaxes(
+    tickmode='array',
+    tickvals=df_filtered['QuarterStr'].unique(),  # all unique dates
+    tickformat="%b %y",  # Format as "Apr 21"
+    tickangle=-45
+)
+fig.update_layout(title_x=0.25)
+
+# Display in Plotly
+st.plotly_chart(fig, use_container_width=True)
+
+
+# st.subheader("Percentage Change in Homelessness vs Selected Start Date (Age Group)")
+# st.line_chart(df_indexed_chart)
 
 # Optional: data preview
 with st.expander("Show Data Table"):
