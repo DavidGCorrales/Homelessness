@@ -319,7 +319,7 @@ df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Create Plotly chart
 fig = px.line(
-    df_filtered,
+    df_filtered[df_filtered['Age Band'] != 'Age Unknown'],
     x='QuarterStr',
     y='Indexed Change (%)',
     color='Age Band'
@@ -422,7 +422,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 
-# df_filtered2
+df_filtered2
 
 
 
