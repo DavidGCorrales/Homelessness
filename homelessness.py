@@ -232,7 +232,7 @@ n_vols_sum2['QuarterDate'] = pd.to_datetime(n_vols_sum2['Quarter'], format='%Y-%
 quarter_dates = sorted(n_vols_sum2['QuarterDate'].unique())
 
 # Age band selector
-age_bands = sorted(n_vols_sum2['Age Band'].unique())
+age_bands = sorted(n_vols_sum2[n_vols_sum2['Age Band'] != 'Age Unknown']['Age Band'].unique())
 selected_ages = st.multiselect("Select Age Bands to Compare", options=age_bands, default=list(age_bands))
 n_vols_sum2 = n_vols_sum2[n_vols_sum2['Age Band'].isin(selected_ages)]
 
@@ -319,7 +319,7 @@ df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Create Plotly chart
 fig = px.line(
-    df_filtered[df_filtered['Age Band'] != 'Age Unknown'],
+    df_filtered,
     x='QuarterStr',
     y='Indexed Change (%)',
     color='Age Band'
@@ -422,7 +422,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 
-df_filtered2
+# df_filtered2
 
 
 
