@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -339,13 +340,88 @@ fig.update_layout(
 # Display in Plotly
 st.plotly_chart(fig, use_container_width=True)
 
-
-# st.subheader("Percentage Change in Homelessness vs Selected Start Date (Age Group)")
-# st.line_chart(df_indexed_chart)
-
 # Optional: data preview
 with st.expander("Show Data Table"):
-    st.dataframe(df_indexed, use_container_width=True)
+    st.dataframe(df_filtered, use_container_width=True)
+
+######### Add space between sections ##########
+st.markdown("<br><br>", unsafe_allow_html=True)
+###############################################    
+
+
+df_filtered2 = df_filtered.copy()
+df_filtered2['Age Band 2'] = np.where(df_filtered2['Age Band'].isin(['16-17 Year Olds', '18-24 Year Olds', '25-34 Year Olds']), "16-34 Year Olds",
+np.where(df_filtered2['Age Band'].isin(['35-44 Year Olds', '45-54 Year Olds']), '35-54 Year Olds',
+         np.where(df_filtered2['Age Band'].isin(['55-64 Year Olds','65-74 Year Olds','75+ Year Olds']), "55+ Year Olds", 'Age Unknown')))
+
+df_filtered2 = df_filtered2.groupby(['QuarterStr', 'QuarterDate', 'Age Band 2'])['Volume'].sum().reset_index()
+
+# Age band selector
+age_bands2 = sorted(df_filtered2['Age Band 2'].unique())
+selected_ages = st.multiselect("Select Age Bands to Compare", options=age_bands2, default=list(age_bands2))
+df_filtered2 = df_filtered2[df_filtered2['Age Band 2'].isin(selected_ages)]
+
+# Use select_slider instead of slider for quarterly granularity
+date_range = st.select_slider(
+    "Select Date Range      ",
+    options=quarter_dates,
+    value=(quarter_dates[0], quarter_dates[-1]),
+    format_func=lambda x: x.strftime('%Y-%m')
+)
+
+# Filter by date range
+df_filtered2 = df_filtered2[(df_filtered2['QuarterDate'] >= date_range[0]) & (df_filtered2['QuarterDate'] <= date_range[1])]
+
+df_filtered2['QuarterStr'] = df_filtered2['QuarterDate'].dt.strftime('%Y-%m')
+
+df_filtered = df_filtered2[df_filtered2['Age Band 2'].isin(age_bands2)]
+
+# Step 1: Get the baseline (earliest date in slider)
+baseline_date = df_filtered2['QuarterDate'].min()
+
+# Step 2: Build baseline by geography
+baseline_df = df_filtered2[df_filtered2['QuarterDate'] == baseline_date][['Age Band 2', 'Volume']]
+baseline_df = baseline_df.set_index('Age Band 2')['Volume']
+
+# Step 3: Calculate % change relative to baseline
+df_filtered2['Indexed Change (%)'] = df_filtered2.apply(
+    lambda row: (row['Volume'] / baseline_df[row['Age Band 2']] - 1) * 100
+    if row['Age Band 2'] in baseline_df else None,
+    axis=1
+)
+
+df_filtered2['QuarterStr'] = df_filtered2['QuarterDate'].dt.strftime('%Y-%m')
+
+# Create Plotly chart
+fig = px.line(
+    df_filtered2,
+    x='QuarterStr',
+    y='Indexed Change (%)',
+    color='Age Band 2'
+)
+
+# Format x-axis and center the title
+fig.update_xaxes(
+    tickmode='array',
+    tickvals=df_filtered2['QuarterStr'].unique(),  # all unique dates
+    tickformat="%b %y",  # Format as "Apr 21"
+    tickangle=-45
+)
+fig.update_layout(
+    title=dict(
+        text="Percentage Change in Homelessness by Consolidated Age Band",
+        x=0.5,           # Center title horizontally
+        xanchor='center' # Anchor title at center
+    )
+                  )
+
+# Display in Plotly
+st.plotly_chart(fig, use_container_width=True)
+
+
+# df_filtered2
+
+
 
 # # Download button
 # csv = df_plot[['Geography', 'Quarter', 'Total']].to_csv(index=False)
