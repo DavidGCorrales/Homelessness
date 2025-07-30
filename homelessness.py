@@ -98,7 +98,7 @@ fig.update_xaxes(
 
 fig.update_layout(
     title=dict(
-        text="Homelessness in London vs Rest of England",
+        text="Number of Homeless Households: London vs Rest of England",
         x=0.5,           # Center title horizontally
         xanchor='center' # Anchor title at center
     )  # Center the title horizontally
@@ -191,7 +191,7 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title=dict(
-        text="Percentage Change in Homelessness: London vs Rest of England",
+        text="Percentage Change in Homeless Households: London vs Rest of England",
         x=0.5,           # Center title horizontally
         xanchor='center' # Anchor title at center
     )
@@ -263,7 +263,7 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title=dict(
-        text="Homelessness by Age Band",
+        text="Number of Homeless Households by Age Band",
         x=0.5,           # Center title horizontally
         xanchor='center' # Anchor title at center
     )
@@ -331,7 +331,7 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title=dict(
-        text="Percentage Change in Homelessness by Age Band",
+        text="Percentage Change in Homeless Households by Age Band",
         x=0.5,           # Center title horizontally
         xanchor='center' # Anchor title at center
     )
@@ -409,7 +409,7 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title=dict(
-        text="Percentage Change in Homelessness by Consolidated Age Band",
+        text="Percentage Change in Homeless Households by Consolidated Age Band",
         x=0.5,           # Center title horizontally
         xanchor='center' # Anchor title at center
     )
