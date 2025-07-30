@@ -21,7 +21,7 @@ st.set_page_config(
 st.title("Homelessness in England since March 2021")
 st.markdown(
     "##### \"Homelessness\" refers to households initially assessed as threatened with homelessness (owed prevention duty) or homeless (owed relief duty).<br><br>"
-    "Data sourced from Official Accredited Statistics published on Gov.UK: https://www.gov.uk/government/statistical-data-sets/live-tables-on-homelessness",
+    "Data sourced from official accredited statistics published on Gov.UK: https://www.gov.uk/government/statistical-data-sets/live-tables-on-homelessness",
     unsafe_allow_html=True
 )
 # Load data
