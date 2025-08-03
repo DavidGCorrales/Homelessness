@@ -100,18 +100,9 @@ fig.update_layout(
     )  # Center the title horizontally
 )
 
-st.plotly_chart(fig, use_container_width=True)
-
-# Summary table
-st.markdown("<h6 style='text-align: center;'>Average Monthly Volume</h6>", unsafe_allow_html=True)
-summary_table = df_plot.groupby('Geography')['Total'].mean().reset_index()
-summary_table.columns = ['Geography', 'Average Volume']
-summary_table['Average Volume'] = summary_table['Average Volume'].round(0).astype(int)
-st.dataframe(summary_table, use_container_width=True)
-
-######### Add space between sections ##########
-st.markdown("<br><br>", unsafe_allow_html=True)
-###############################################
+#################################
+# Indexed Percentage Change Chart
+#################################
 
 # Sort
 df = df.sort_values(['Geography', 'Quarter'])
@@ -128,27 +119,12 @@ df['Indexed Change (%)'] = df.apply(
 # Filtered data
 df_indexed = df[['Geography', 'Quarter', 'Total', 'Indexed Change (%)']].dropna()
 
-# Plot
-
-# Optional: geography selector
-geos = df_indexed['Geography'].unique()
-selected_geos = st.multiselect("Select Geographies to Compare", options=geos, default=list(geos))
-df_indexed = df_indexed[df_indexed['Geography'].isin(selected_geos)]
-
 # Convert Quarter to datetime and clean data
 df_indexed['QuarterDate'] = pd.to_datetime(df_indexed['Quarter'], format='%Y-%m', errors='coerce')
 df_indexed = df_indexed.dropna(subset=['QuarterDate'])
 
 # Create sorted list of unique quarterly dates
 quarter_dates = sorted(df_indexed['QuarterDate'].unique())
-
-# Use select_slider instead of slider for quarterly granularity
-date_range = st.select_slider(
-    "Select Date Range ",
-    options=quarter_dates,
-    value=(quarter_dates[0], quarter_dates[-1]),
-    format_func=lambda x: x.strftime('%Y-%m')
-)
 
 # Filter by date range
 df_filtered = df_indexed[(df_indexed['QuarterDate'] >= date_range[0]) & (df_indexed['QuarterDate'] <= date_range[1])]
@@ -171,7 +147,7 @@ df_filtered['Indexed Change (%)'] = df_filtered.apply(
 df_filtered['QuarterStr'] = df_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Create Plotly chart
-fig = px.line(
+fig2 = px.line(
     df_filtered,
     x='QuarterStr',
     y='Indexed Change (%)',
@@ -179,13 +155,13 @@ fig = px.line(
 )
 
 # Format x-axis and center the title
-fig.update_xaxes(
+fig2.update_xaxes(
     tickmode='array',
     tickvals=df_filtered['QuarterStr'].unique(),  # all unique dates
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
-fig.update_layout(
+fig2.update_layout(
     title=dict(
         text="Percentage Change in Homeless Households: London vs Rest of England",
         x=0.5,           # Center title horizontally
@@ -193,15 +169,17 @@ fig.update_layout(
     )
 )
 
-# Display in Plotly
-st.plotly_chart(fig, use_container_width=True)
+col1, col2 = st.columns(2)
+# Volume
+with col1:
+    st.plotly_chart(fig, use_container_width=True)
+# pcnt
+with col2:
+    st.plotly_chart(fig2, use_container_width=True)
 
-# st.subheader("Percentage Change in Homelessness vs Selected Start Date (Region)")
-# st.line_chart(df_indexed_chart)
-
-# Optional: data preview
-with st.expander("Show Data Table"):
-    st.dataframe(df_indexed, use_container_width=True)
+# # Optional: data preview
+# with st.expander("Show Data Table"):
+#     st.dataframe(df_indexed, use_container_width=True)
 
 ######### Add space between sections ##########
 st.markdown("<br><br>", unsafe_allow_html=True)
@@ -313,10 +291,10 @@ fig2.update_layout(
 )
 
 col1, col2 = st.columns(2)
-
+# Volume
 with col1:
     st.plotly_chart(fig, use_container_width=True)
-
+# pcnt
 with col2:
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -395,7 +373,6 @@ with st.expander("Show Data Table"):
 ######### Add space between sections ##########
 st.markdown("<br><br>", unsafe_allow_html=True)
 ###############################################    
-
 
 df_filtered2 = df_filtered.copy()
 df_filtered2['Age Band 2'] = np.where(df_filtered2['Age Band'].isin(['16-17 Year Olds', '18-24 Year Olds', '25-34 Year Olds']), "16-34 Year Olds",
