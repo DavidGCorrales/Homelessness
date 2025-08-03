@@ -204,9 +204,9 @@ n_vols_sum2['QuarterDate'] = pd.to_datetime(n_vols_sum2['Quarter'], format='%Y-%
 quarter_dates = sorted(n_vols_sum2['QuarterDate'].unique())
 
 # Age band selector
-age_bands = sorted(n_vols_sum2[n_vols_sum2['Age Band'] != 'Age Unknown']['Age Band'].unique())
-selected_ages = st.multiselect("Select Age Bands to Compare", options=age_bands, default=list(age_bands))
-n_vols_sum2 = n_vols_sum2[n_vols_sum2['Age Band'].isin(selected_ages)]
+age_bands_sorted = sorted(n_vols_sum2[n_vols_sum2['Age Band'] != 'Age Unknown']['Age Band'].unique())
+selected_ages = st.multiselect("Select Age Bands to Compare", options=age_bands_sorted, default=list(age_bands_sorted))
+filtered_ages = n_vols_sum2[n_vols_sum2['Age Band'].isin(selected_ages)]
 
 # Use select_slider instead of slider for quarterly granularity
 date_range2 = st.select_slider(
@@ -217,15 +217,15 @@ date_range2 = st.select_slider(
 )
 
 # Volume: Filter by date range
-n_vols_sum2 = n_vols_sum2[(n_vols_sum2['QuarterDate'] >= date_range2[0]) & (n_vols_sum2['QuarterDate'] <= date_range2[1])]
+n_vols_sum_filtered = filtered_ages[(filtered_ages['QuarterDate'] >= date_range2[0]) & (filtered_ages['QuarterDate'] <= date_range2[1])]
 
 # Volume: Create string-based index for pivot
-n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
+n_vols_sum_filtered['QuarterStr'] = n_vols_sum_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 
 # Create Plotly chart
 fig = px.line(
-    n_vols_sum2,
+    n_vols_sum_filtered,
     x='QuarterStr',
     y='Volume',
     color='Age Band'
@@ -234,7 +234,7 @@ fig = px.line(
 # Format x-axis and center the title
 fig.update_xaxes(
     tickmode='array',
-    tickvals=n_vols_sum2['QuarterStr'].unique(),  # all unique dates
+    tickvals=n_vols_sum_filtered['QuarterStr'].unique(),  # all unique dates
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
@@ -251,11 +251,11 @@ fig.update_layout(
 #################################
 
 # Filter by date range
-n_vols_sum2 = n_vols_sum2[(n_vols_sum2['QuarterDate'] >= date_range[0]) & (n_vols_sum2['QuarterDate'] <= date_range[1])]
+n_vols_sum_filtered = n_vols_sum_filtered[(n_vols_sum_filtered['QuarterDate'] >= date_range[0]) & (n_vols_sum_filtered['QuarterDate'] <= date_range[1])]
 
-n_vols_sum2['QuarterStr'] = n_vols_sum2['QuarterDate'].dt.strftime('%Y-%m')
+n_vols_sum_filtered['QuarterStr'] = n_vols_sum_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
-pcnt_age_band = n_vols_sum2[n_vols_sum2['Age Band'].isin(age_bands)]
+pcnt_age_band = n_vols_sum_filtered[n_vols_sum_filtered['Age Band'].isin(age_bands_sorted)]
 
 # Step 1: Get the baseline (earliest date in slider)
 baseline_date = pcnt_age_band['QuarterDate'].min()
@@ -313,10 +313,12 @@ with col2:
 st.markdown("<br><br>", unsafe_allow_html=True)
 ###############################################
 
-pcnt_age_band2 = pcnt_age_band.copy()
+pcnt_age_band2 = n_vols_sum2.copy()
 pcnt_age_band2['Age Band 2'] = np.where(pcnt_age_band2['Age Band'].isin(['16-17 Year Olds', '18-24 Year Olds', '25-34 Year Olds']), "16-34 Year Olds",
 np.where(pcnt_age_band2['Age Band'].isin(['35-44 Year Olds', '45-54 Year Olds']), '35-54 Year Olds',
          np.where(pcnt_age_band2['Age Band'].isin(['55-64 Year Olds','65-74 Year Olds','75+ Year Olds']), "55+ Year Olds", 'Age Unknown')))
+
+pcnt_age_band2['QuarterStr'] = pcnt_age_band2['QuarterDate'].dt.strftime('%Y-%m')
 
 pcnt_age_band2 = pcnt_age_band2.groupby(['QuarterStr', 'QuarterDate', 'Age Band 2'])['Volume'].sum().reset_index()
 
@@ -324,7 +326,7 @@ pcnt_age_band2 = pcnt_age_band2.groupby(['QuarterStr', 'QuarterDate', 'Age Band 
 quarter_dates = sorted(pcnt_age_band2['QuarterDate'].unique())
 
 # Age band selector
-age_bands2 = sorted(pcnt_age_band2['Age Band 2'].unique())
+age_bands2 = sorted(pcnt_age_band2[pcnt_age_band2['Age Band 2'] != 'Age Unknown']['Age Band 2'].unique())
 selected_ages2 = st.multiselect("Select Age Bands to Compare", options=age_bands2, default=list(age_bands2))
 pcnt_age_band2 = pcnt_age_band2[pcnt_age_band2['Age Band 2'].isin(selected_ages2)]
 
@@ -484,7 +486,7 @@ fig = px.bar(
 # Format x-axis
 fig.update_xaxes(
     tickmode='array',
-    tickvals=df_filtered['QuarterStr'].unique(),
+    tickvals=n_pcnt_sum2['QuarterStr'].unique(),
     tickformat="%b %y",
     tickangle=-45
 )
