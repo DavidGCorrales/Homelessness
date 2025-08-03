@@ -58,18 +58,18 @@ date_range = st.select_slider(
 )
 
 # Filter by date range
-df_plot = df_plot[(df_plot['QuarterDate'] >= date_range[0]) & (df_plot['QuarterDate'] <= date_range[1])]
+df_plot_filtered = df_plot[(df_plot['QuarterDate'] >= date_range[0]) & (df_plot['QuarterDate'] <= date_range[1])]
 
 # Geography multiselect
 geos = df_plot['Geography'].unique()
 selected_geos = st.multiselect("Select Geographies", options=geos, default=list(geos))
-df_plot = df_plot[df_plot['Geography'].isin(selected_geos)]
+df_plot_filtered = df_plot_filtered[df_plot_filtered['Geography'].isin(selected_geos)]
 
 # Volume: Sort
-df_plot = df_plot.sort_values(by=["Geography", "QuarterDate"])
+df_plot_filtered = df_plot_filtered.sort_values(by=["Geography", "QuarterDate"])
 
 # Volume: Create string-based index for pivot
-df_plot['QuarterStr'] = df_plot['QuarterDate'].dt.strftime('%Y-%m')
+df_plot_filtered['QuarterStr'] = df_plot_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # # Volume: Pivot with string-based index
 # df_volume_chart = df_plot.pivot(index='QuarterStr', columns='Geography', values='Total')
@@ -82,12 +82,12 @@ df_plot['QuarterStr'] = df_plot['QuarterDate'].dt.strftime('%Y-%m')
 # df_pcnt_chart = df_pcnt_chart.sort_index()
 
 # Volume: Create Plotly chart
-fig = px.line(df_plot, x="QuarterDate", y="Total", color="Geography")
+fig = px.line(df_plot_filtered, x="QuarterDate", y="Total", color="Geography")
 
 # Volume: Format x-axis ticks
 fig.update_xaxes(
     tickmode='array',
-    tickvals=df_plot['QuarterDate'].unique(),  # all unique dates
+    tickvals=df_plot_filtered['QuarterDate'].unique(),  # all unique dates
     tickformat="%b %y",  # e.g., Mar 21
     tickangle=-45
 )
@@ -250,32 +250,25 @@ fig.update_layout(
 # Indexed Percentage Change Chart
 #################################
 
-# Filter by date range
-n_vols_sum_filtered = n_vols_sum_filtered[(n_vols_sum_filtered['QuarterDate'] >= date_range[0]) & (n_vols_sum_filtered['QuarterDate'] <= date_range[1])]
-
-n_vols_sum_filtered['QuarterStr'] = n_vols_sum_filtered['QuarterDate'].dt.strftime('%Y-%m')
-
-pcnt_age_band = n_vols_sum_filtered[n_vols_sum_filtered['Age Band'].isin(age_bands_sorted)]
-
 # Step 1: Get the baseline (earliest date in slider)
-baseline_date = pcnt_age_band['QuarterDate'].min()
+baseline_date = n_vols_sum_filtered['QuarterDate'].min()
 
 # Step 2: Build baseline by geography
-baseline_df = pcnt_age_band[pcnt_age_band['QuarterDate'] == baseline_date][['Age Band', 'Volume']]
+baseline_df = n_vols_sum_filtered[n_vols_sum_filtered['QuarterDate'] == baseline_date][['Age Band', 'Volume']]
 baseline_df = baseline_df.set_index('Age Band')['Volume']
 
 # Step 3: Calculate % change relative to baseline
-pcnt_age_band['Indexed Change (%)'] = pcnt_age_band.apply(
+n_vols_sum_filtered['Indexed Change (%)'] = n_vols_sum_filtered.apply(
     lambda row: (row['Volume'] / baseline_df[row['Age Band']] - 1) * 100
     if row['Age Band'] in baseline_df else None,
     axis=1
 )
 
-pcnt_age_band['QuarterStr'] = pcnt_age_band['QuarterDate'].dt.strftime('%Y-%m')
+n_vols_sum_filtered['QuarterStr'] = n_vols_sum_filtered['QuarterDate'].dt.strftime('%Y-%m')
 
 # Create Plotly chart
 fig2 = px.line(
-    pcnt_age_band,
+    n_vols_sum_filtered,
     x='QuarterStr',
     y='Indexed Change (%)',
     color='Age Band'
@@ -284,7 +277,7 @@ fig2 = px.line(
 # Format x-axis and center the title
 fig2.update_xaxes(
     tickmode='array',
-    tickvals=pcnt_age_band['QuarterStr'].unique(),  # all unique dates
+    tickvals=n_vols_sum_filtered['QuarterStr'].unique(),  # all unique dates
     tickformat="%b %y",  # Format as "Apr 21"
     tickangle=-45
 )
